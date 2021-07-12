@@ -12,11 +12,13 @@ app.use(bodyParser());
 app.post("/calculateTaxAndTotal", function(req, res) {
   let items = req.body;
   let totalAmount=0;
+  let Amount = 0;
   let totalTax=0;
+  let discount = 0;
   let discountGiven='No';
   let currentTax;
   items.forEach(item => {
-    totalAmount += item.quantity * item.price;
+    Amount += item.quantity * item.price;
     currentTax=0;
     switch(item.itemCategory)
     {
@@ -33,14 +35,17 @@ app.post("/calculateTaxAndTotal", function(req, res) {
       case 'Imported' : 
         currentTax = 18; 
     }
-    totalTax += (item.quantity * item.price)*(currentTax/100); 
+    totalTax += (item.quantity * item.price)*(currentTax/100);
+     
   });
+  totalAmount += Amount + totalTax;
   if(totalAmount >= 2000)
   {
-    totalAmount -= (totalAmount * 5 / 100);
+    discount = (totalAmount * 5 / 100);
+    totalAmount -= discount;
     discountGiven = 'Yes';
   } 
-  res.send("Total Tax: " +totalTax+ "\nTotal Amount: " +totalAmount+"\nDscount Given: " +discountGiven);
+  res.send("Item Amount: "+Amount+"\nTax: " +totalTax+"\nDiscount price: "+discount+"\nTotal Amount: " +totalAmount+"\nDscount Given: " +discountGiven);
 });
  
 app.listen(3003, function(){
